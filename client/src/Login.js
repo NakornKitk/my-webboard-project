@@ -78,6 +78,9 @@ export default function SignIn(props) {
         .then((response) => response.json())
         .then((data) => {
             if (data.status === 'ok') {
+                localStorage.setItem('token',data.token)
+                localStorage.setItem('user',data.name)
+                window.location = '/'
                 alert('Login successful');
             } else {
                 alert('Login failed');
@@ -158,6 +161,15 @@ export default function SignIn(props) {
                 sx={{ alignSelf: 'center' }}
               >
                 Sign up
+              </Link>
+            </Typography>
+            <Typography sx={{ textAlign: 'center' }}>
+              <Link
+                href="/"
+                variant="body2"
+                sx={{ alignSelf: 'center' }}
+              >
+                Sign in as a Guest
               </Link>
             </Typography>
           </Box>

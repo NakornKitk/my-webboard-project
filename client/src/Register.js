@@ -56,74 +56,42 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignUp(props) {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const [fnameError, setfNameError] = React.useState(false);
-  const [fnameErrorMessage, setfNameErrorMessage] = React.useState('');
-  const [lnameError, setlNameError] = React.useState(false);
-  const [lnameErrorMessage, setlNameErrorMessage] = React.useState('');
-
-  const validateInputs = () => {
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-    const fname = document.getElementById('fname');
-    const lname = document.getElementById('lname');
-
-    let isValid = true;
-
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
-      isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage('');
-    }
-
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage('');
-    }
-
-    if (!fname.value || fname.value.length < 1) {
-      setfNameError(true);
-      setfNameErrorMessage('First Name is required.');
-      isValid = false;
-    } else {
-      setfNameError(false);
-      setfNameErrorMessage('');
-    }
-
-    if (!lname.value || lname.value.length < 1) {
-        setlNameError(true);
-        setlNameErrorMessage('Last Name is required.');
-        isValid = false;
-      } else {
-        setlNameError(false);
-        setlNameErrorMessage('');
-      }
-
-    return isValid;
-  };
+  const token = localStorage.getItem("token");
+ 
 
   const handleSubmit = (event) => {
-    if (fnameError || lnameError || emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }
+   event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get('fname'),
-      lastName: data.get('lname'),
+    const jsonData = {
+      fname: data.get('fname'),
+      lname: data.get('lname'),
       email: data.get('email'),
       password: data.get('password'),
-    });
+    };
+
+    fetch('http://localhost:8080/register', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json', // Tell the server we're sending JSON
+      },
+      body: JSON.stringify(jsonData), // Convert JavaScript object to JSON string
+  })
+      .then((response) => response.json())
+      .then((data) => {
+          if (data.status === 'ok') {
+              alert('register successful');
+              if (token) {
+                localStorage.removeItem('token')
+                localStorage.removeItem('user')
+              }
+              window.location = '/login'
+          } else {
+              alert('register failed');
+          }
+      })
+      .catch((error) => {
+          console.error('Error:', error);
+      });
   };
 
   return (
@@ -153,9 +121,6 @@ export default function SignUp(props) {
                 fullWidth
                 id="fname"
                 placeholder="Jon"
-                error={fnameError}
-                helperText={fnameErrorMessage}
-                color={fnameError ? 'error' : 'primary'}
               />
             </FormControl>
             <FormControl>
@@ -167,9 +132,6 @@ export default function SignUp(props) {
                 fullWidth
                 id="lname"
                 placeholder="Snow"
-                error={lnameError}
-                helperText={lnameErrorMessage}
-                color={lnameError ? 'error' : 'primary'}
               />
             </FormControl>
             <FormControl>
@@ -182,9 +144,6 @@ export default function SignUp(props) {
                 name="email"
                 autoComplete="email"
                 variant="outlined"
-                error={emailError}
-                helperText={emailErrorMessage}
-                color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
             <FormControl>
@@ -198,16 +157,12 @@ export default function SignUp(props) {
                 id="password"
                 autoComplete="new-password"
                 variant="outlined"
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              onClick={validateInputs}
             >
               Sign up
             </Button>

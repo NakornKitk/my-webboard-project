@@ -176,6 +176,8 @@ export function Search() {
 
 export default function MainContent() {
   const [focusedCardIndex, setFocusedCardIndex] = React.useState(null);
+  const token = localStorage.getItem("token");
+  const user = localStorage.getItem("user");
 
   const handleFocus = (index) => {
     setFocusedCardIndex(index);
@@ -192,9 +194,16 @@ export default function MainContent() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       <div>
-        <Typography variant="h1" gutterBottom>
-          Blog
-        </Typography>
+        {!token && (
+              <Typography variant="h1" gutterBottom>
+              Welcome, Guest
+            </Typography>
+            )}
+            {token && (
+              <Typography variant="h1" gutterBottom>
+              Welcome, {user}
+            </Typography>
+            )}
         <Typography>Stay in the loop with the latest about our products</Typography>
       </div>
       <Box

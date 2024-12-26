@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import AppAppBar from './component/AppAppBar';
@@ -8,6 +8,7 @@ import Footer from './component/Footer';
 
 
 export default function Blog(props) {
+
   return (
     <>
       <CssBaseline enableColorScheme />
