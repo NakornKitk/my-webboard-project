@@ -65,7 +65,7 @@ export default function SignUp() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:8080/authen", {
+    fetch(`${process.env.REACT_APP_API}/authen`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,6 +86,8 @@ export default function SignUp() {
         console.error("Error:", error);
       });
   }, []);
+
+  
   const [category, setCategory] = useState("");
 
   const handleChange = (event) => {

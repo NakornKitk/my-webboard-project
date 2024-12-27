@@ -1,4 +1,4 @@
-import * as React from 'react';
+import {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import Avatar from '@mui/material/Avatar';
 import AvatarGroup from '@mui/material/AvatarGroup';
@@ -175,9 +175,11 @@ export function Search() {
 }
 
 export default function MainContent() {
-  const [focusedCardIndex, setFocusedCardIndex] = React.useState(null);
+  const [focusedCardIndex, setFocusedCardIndex] = useState(null);
   const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user");
+  const id = localStorage.getItem("id");
+  const [name, setName] = useState('')
+  const [topic, setTopic] = useState([])
 
   const handleFocus = (index) => {
     setFocusedCardIndex(index);
@@ -191,6 +193,34 @@ export default function MainContent() {
     console.info('You clicked the filter chip.');
   };
 
+  const fetchUserdata = () => {
+    fetch(`${process.env.REACT_APP_API}/getuser?id=${id}`)
+    .then(response => response.json())
+    .then(user => {
+      setName(user.data.fname);
+    })
+    .catch(error => console.error('Error fetching user data:', error));
+  }
+
+  const fetchTopicdata = () => {
+    fetch(`${process.env.REACT_APP_API}/gettopic`)
+    .then(response => response.json())
+    .then(topic => {
+      setTopic(topic.data);
+    })
+    .catch(error => console.error('Error fetching topic data:', error));
+  }
+
+  useEffect(() => {
+    fetchTopicdata()
+    if (token) {
+      fetchUserdata()
+    }
+    // console.log(topic)  
+  },[token]);
+
+  
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       <div>
@@ -201,7 +231,7 @@ export default function MainContent() {
             )}
             {token && (
               <Typography variant="h1" gutterBottom>
-              Welcome, {user}
+              Welcome, {name}
             </Typography>
             )}
         <Typography>Stay in the loop with the latest about our products</Typography>

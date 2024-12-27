@@ -45,7 +45,7 @@ export default function AppAppBar() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.removeItem("id");
     window.location = "/";
   };
 

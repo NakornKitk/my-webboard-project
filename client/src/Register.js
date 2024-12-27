@@ -69,7 +69,7 @@ export default function SignUp(props) {
       password: data.get('password'),
     };
 
-    fetch('http://localhost:8080/register', {
+    fetch(`${process.env.REACT_APP_API}/register`, {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json', // Tell the server we're sending JSON

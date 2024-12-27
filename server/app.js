@@ -12,11 +12,11 @@ app.use(cors())
 
 const mysql = require('mysql2');
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'my_webboard',
-    port: 3307
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASS || '',
+    database: process.env.DB_NAME || 'my_webboard',
+    port: process.env.DB_PORT || 3307
 });
 
 
@@ -45,8 +45,8 @@ app.post('/login', jsonParser, function(req,res,next){
             if (users.length == 0) {res.json({ status: 'error', message: 'no user found' }); return}
             bcrypt.compare(req.body.password, users[0].password, function(err, isLogin){
                 if (isLogin) {
-                    var token = jwt.sign({email: users[0].email, name: users[0].fname }, process.env.SECRET_KEY, { expiresIn: '1h' }  )
-                    res.json({status: 'ok', message: 'login success', token, name: users[0].fname})
+                    var token = jwt.sign({email: users[0].email}, process.env.SECRET_KEY, { expiresIn: '1h' }  )
+                    res.json({status: 'ok', message: 'login success', token, id: users[0].id})
                 } else {
                     res.json({status: 'error', message: 'login failed'})
                 }
@@ -54,6 +54,7 @@ app.post('/login', jsonParser, function(req,res,next){
         }
     );
 })
+
 
 
 app.post('/authen', jsonParser, function(req,res,next){
@@ -65,6 +66,43 @@ app.post('/authen', jsonParser, function(req,res,next){
         res.json({status: 'error', message: err.message})
     }
 })
+
+
+
+app.get('/getuser', jsonParser, function(req, res, next) {
+    const id = req.query.id;  // Getting id from query parameters
+
+    connection.execute(
+        'SELECT * FROM users WHERE id=?',
+        [id],
+        function(err, user, fields) {
+            if (err) {
+                res.json({ status: 'error', message: err });
+                return;
+            }
+            if (user.length === 0) {
+                res.json({ status: 'error', message: 'user not found' });
+                return;
+            }
+            res.json({ status: 'ok', data: user[0] });
+        }
+    );
+});
+
+
+
+app.get('/gettopic', jsonParser, function(req, res, next) {
+    connection.execute(
+        'SELECT * FROM topics',
+        function(err, topic, fields) {
+            if (err) {
+                res.json({ status: 'error', message: err });
+                return;
+            }
+            res.json({ status: 'ok', data: topic[0] });
+        }
+    );
+});
 
 
 app.listen(8080, function(){

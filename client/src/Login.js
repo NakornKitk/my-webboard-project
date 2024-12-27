@@ -68,7 +68,7 @@ export default function SignIn(props) {
     };
 
     // Send JSON data to the server
-    fetch('http://localhost:8080/login', {
+    fetch(`${process.env.REACT_APP_API}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json', // Tell the server we're sending JSON
@@ -79,7 +79,7 @@ export default function SignIn(props) {
         .then((data) => {
             if (data.status === 'ok') {
                 localStorage.setItem('token',data.token)
-                localStorage.setItem('user',data.name)
+                localStorage.setItem('id',data.id)
                 window.location = '/'
                 alert('Login successful');
             } else {
