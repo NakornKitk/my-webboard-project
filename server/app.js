@@ -113,6 +113,19 @@ app.get("/gettopic", jsonParser, function (req, res, next) {
   });
 });
 
+app.get("/getonetopic", jsonParser, function (req, res, next) {
+  const id = req.query.id
+  connection.execute("SELECT * FROM topics where topic_id = ?",
+  [id],
+  function (err, topic, fields) {
+    if (err) {
+      res.json({ status: "error", message: err });
+      return;
+    }
+    res.json({ status: "ok", data: topic});
+  });
+});
+
 app.post("/createtopic", jsonParser, function (req, res, next) {
   const name = req.body.topic_name;
   const description = req.body.description;

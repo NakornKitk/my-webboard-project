@@ -13,7 +13,7 @@ import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
 import { SitemarkIcon } from "./component/CustomIcons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -58,13 +58,22 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 }));
 
 
-export default function Create() {
+export default function Edit() {
+  const { id } = useParams(); //topic id
   const navigate = useNavigate();
+
+
+  const [topic, setTopic] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState(""); // Initialize with empty string
+  
   const redirectPage = () => {
     navigate("/");
   };
 
-  useEffect(() => {
+
+
+  const fetchAuthen = () => {
     const token = localStorage.getItem("token");
     fetch(`${process.env.REACT_APP_API}/authen`, {
       method: "POST",
@@ -84,27 +93,48 @@ export default function Create() {
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, []);
+  }
 
-  
-  const [category, setCategory] = useState("");
+  const fetchTopicId = () => {
+    fetch(`http://localhost:8080/getonetopic/?id=${id}`, {
+      method: 'GET',
+      headers: {
+          'Content-Type': 'application/json', // Tell the server we're sending JSON
+      }
+  })
+      .then((response) => response.json())
+      .then((result) => {
+        setTopic(result.data[0].topic_name)
+        setDescription(result.data[0].description)
+        setCategory(result.data[0].category)
+      })
+      .catch((error) => {
+          console.error('Error:', error);
+      });
 
-  const handleChange = (event) => {
-    setCategory(event.target.value);
-  };
+  }
+
+
+  useEffect(() => {
+    fetchAuthen() 
+    fetchTopicId()
+    // eslint-disable-next-line
+  },[]);
+
+
 
   const handleSubmit = (event) => {
     event.preventDefault();
-      const user_id = localStorage.getItem("id")
-        const data = new FormData(event.currentTarget);
+        const user_id = localStorage.getItem("id")
         const jsonData = {
-          topic_name: data.get('topic'),
-          description: data.get('description'),
-          category: data.get('category'),
+          topic_id: id,
+          topic_name: topic,
+          description: description,
+          category: category,
           user_id: user_id
         };
 
-        fetch('http://localhost:8080/createtopic', {
+        fetch(`http://localhost:8080/updatetopic`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json', // Tell the server we're sending JSON
@@ -113,7 +143,7 @@ export default function Create() {
       })
           .then((response) => response.json())
           .then((data) => {
-            alert("New topic is already created")
+            alert("Topic data is already updated")
             redirectPage()
           })
           .catch((error) => {
@@ -147,7 +177,8 @@ export default function Create() {
                 required
                 fullWidth
                 id="topic"
-                placeholder="Insert Topic..."
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
               />
             </FormControl>
             <FormControl>
@@ -157,9 +188,10 @@ export default function Create() {
                 name="description"
                 required
                 id="description"
-                placeholder="Insert Description..."
+                value={description}
                 multiline
                 rows={4}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </FormControl>
             <FormControl fullWidth>
@@ -170,7 +202,7 @@ export default function Create() {
                 name="category"
                 value={category}
                 label="Category"
-                onChange={handleChange}
+                onChange={(e) => setCategory(e.target.value)}
               >
                 <MenuItem value={"sport"}>Sport</MenuItem>
                 <MenuItem value={"entertainment"}>Entertainment</MenuItem>
