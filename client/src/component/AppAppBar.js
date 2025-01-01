@@ -66,7 +66,7 @@ export default function AppAppBar() {
             sx={{ flexGrow: 1, display: "flex", alignItems: "center", px: 0 }}
           >
             <SitemarkIcon />
-            <Box sx={{ display: { xs: "none", md: "flex" } }}>
+            {/* <Box sx={{ display: { xs: "none", md: "flex" } }}>
               <Button variant="text" color="info" size="small">
                 Features
               </Button>
@@ -95,7 +95,7 @@ export default function AppAppBar() {
               >
                 Blog
               </Button>
-            </Box>
+            </Box> */}
           </Box>
           <Box
             sx={{
@@ -172,12 +172,7 @@ export default function AppAppBar() {
                     <CloseRoundedIcon />
                   </IconButton>
                 </Box>
-                <MenuItem>Features</MenuItem>
-                <MenuItem>Testimonials</MenuItem>
-                <MenuItem>Highlights</MenuItem>
-                <MenuItem>Pricing</MenuItem>
-                <MenuItem>FAQ</MenuItem>
-                <MenuItem>Blog</MenuItem>
+                
                 <Divider sx={{ my: 3 }} />
                 {!token && (
                   <>
