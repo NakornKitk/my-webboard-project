@@ -11,7 +11,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Drawer from "@mui/material/Drawer";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
-import { SitemarkIcon } from "./CustomIcons";
+import WebboardIcon from "./CustomIcons";
 import { Link } from "react-router-dom";
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
@@ -65,37 +65,7 @@ export default function AppAppBar() {
           <Box
             sx={{ flexGrow: 1, display: "flex", alignItems: "center", px: 0 }}
           >
-            <SitemarkIcon />
-            {/* <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              <Button variant="text" color="info" size="small">
-                Features
-              </Button>
-              <Button variant="text" color="info" size="small">
-                Testimonials
-              </Button>
-              <Button variant="text" color="info" size="small">
-                Highlights
-              </Button>
-              <Button variant="text" color="info" size="small">
-                Pricing
-              </Button>
-              <Button
-                variant="text"
-                color="info"
-                size="small"
-                sx={{ minWidth: 0 }}
-              >
-                FAQ
-              </Button>
-              <Button
-                variant="text"
-                color="info"
-                size="small"
-                sx={{ minWidth: 0 }}
-              >
-                Blog
-              </Button>
-            </Box> */}
+            <WebboardIcon />
           </Box>
           <Box
             sx={{
@@ -138,7 +108,7 @@ export default function AppAppBar() {
               <>
                 <Button
                   color="primary"
-                  variant="text"
+                  variant="contained"
                   size="small"
                   onClick={handleLogout}
                 >

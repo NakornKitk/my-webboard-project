@@ -11,7 +11,8 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
-import { SitemarkIcon } from './component/CustomIcons';
+import WebboardIcon from '../component/CustomIcons';
+import AppTheme from '../theme/AppTheme';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -21,18 +22,18 @@ const Card = styled(MuiCard)(({ theme }) => ({
   padding: theme.spacing(4),
   gap: theme.spacing(2),
   margin: 'auto',
+  [theme.breakpoints.up('sm')]: {
+    maxWidth: '450px',
+  },
   boxShadow:
     'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-  [theme.breakpoints.up('sm')]: {
-    width: '450px',
-  },
   ...theme.applyStyles('dark', {
     boxShadow:
       'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
   }),
 }));
 
-const SignUpContainer = styled(Stack)(({ theme }) => ({
+const SignInContainer = styled(Stack)(({ theme }) => ({
   height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
   minHeight: '100%',
   padding: theme.spacing(2),
@@ -55,107 +56,91 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function SignUp(props) {
-  const token = localStorage.getItem("token");
- 
+export default function UserLoginPage(props) {
 
   const handleSubmit = (event) => {
-   event.preventDefault();
+    event.preventDefault(); // Prevent default form submission behavior.
+
+    // Extract form data
     const data = new FormData(event.currentTarget);
     const jsonData = {
-      fname: data.get('fname'),
-      lname: data.get('lname'),
-      email: data.get('email'),
-      password: data.get('password'),
+        email: data.get('email'),
+        password: data.get('password'),
     };
 
-    fetch(`${process.env.REACT_APP_API}/register`, {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json', // Tell the server we're sending JSON
-      },
-      body: JSON.stringify(jsonData), // Convert JavaScript object to JSON string
-  })
-      .then((response) => response.json())
-      .then((data) => {
-          if (data.status === 'ok') {
-              alert('register successful');
-              if (token) {
-                localStorage.removeItem('token')
-                localStorage.removeItem('user')
-              }
-              window.location = '/login'
-          } else {
-              alert('register failed');
-          }
-      })
-      .catch((error) => {
-          console.error('Error:', error);
-      });
+    // Send JSON data to the server
+    fetch(`${process.env.REACT_APP_API}/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json', // Tell the server we're sending JSON
+        },
+        body: JSON.stringify(jsonData), // Convert JavaScript object to JSON string
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.status === 'ok') {
+                localStorage.setItem('token',data.token)
+                localStorage.setItem('id',data.id)
+                window.location = '/'
+                alert('Login successful');
+            } else {
+                alert('Login failed');
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
   };
 
   return (
-    <>
-      <CssBaseline enableColorScheme />
-      <SignUpContainer direction="column" justifyContent="space-between">
+    <AppTheme {...props}>
+    <CssBaseline enableColorScheme />
+      <SignInContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
-          <SitemarkIcon />
+          <WebboardIcon />
           <Typography
             component="h1"
             variant="h4"
             sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
           >
-            Sign up
+            Sign in
           </Typography>
           <Box
             component="form"
-            onSubmit={handleSubmit}
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+            noValidate
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              width: '100%',
+              gap: 2,
+            }}
+            onSubmit={handleSubmit} 
           >
-            <FormControl>
-              <FormLabel htmlFor="fname">First Name</FormLabel>
-              <TextField
-                autoComplete="fname"
-                name="fname"
-                required
-                fullWidth
-                id="fname"
-                placeholder="Jon"
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="lname">Last name</FormLabel>
-              <TextField
-                autoComplete="lname"
-                name="lname"
-                required
-                fullWidth
-                id="lname"
-                placeholder="Snow"
-              />
-            </FormControl>
             <FormControl>
               <FormLabel htmlFor="email">Email</FormLabel>
               <TextField
+                id="email"
+                type="email"
+                name="email"
+                placeholder="your@email.com"
+                autoComplete="email"
+                autoFocus
                 required
                 fullWidth
-                id="email"
-                placeholder="your@email.com"
-                name="email"
-                autoComplete="email"
                 variant="outlined"
               />
             </FormControl>
             <FormControl>
               <FormLabel htmlFor="password">Password</FormLabel>
               <TextField
-                required
-                fullWidth
                 name="password"
                 placeholder="••••••"
                 type="password"
                 id="password"
-                autoComplete="new-password"
+                autoComplete="current-password"
+                autoFocus
+                required
+                fullWidth
                 variant="outlined"
               />
             </FormControl>
@@ -164,26 +149,33 @@ export default function SignUp(props) {
               fullWidth
               variant="contained"
             >
-              Sign up
+              Sign in
             </Button>
           </Box>
-          <Divider>
-            <Typography sx={{ color: 'text.secondary' }}>or</Typography>
-          </Divider>
+          <Divider>or</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Typography sx={{ textAlign: 'center' }}>
-              Already have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link
-                href="/login"
+                href="/register"
                 variant="body2"
                 sx={{ alignSelf: 'center' }}
               >
-                Sign in
+                Sign up
+              </Link>
+            </Typography>
+            <Typography sx={{ textAlign: 'center' }}>
+              <Link
+                href="/"
+                variant="body2"
+                sx={{ alignSelf: 'center' }}
+              >
+                Sign in as a Guest
               </Link>
             </Typography>
           </Box>
         </Card>
-      </SignUpContainer>
-    </>
+      </SignInContainer>
+    </AppTheme>
   );
 }

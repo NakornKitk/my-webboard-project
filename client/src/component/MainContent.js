@@ -18,8 +18,7 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import RssFeedRoundedIcon from "@mui/icons-material/RssFeedRounded";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
-
-
+import Loading from "./Loading";
 
 const SyledCard = styled(Card)(({ theme }) => ({
   display: "flex",
@@ -57,28 +56,6 @@ const StyledTypography = styled(Typography)({
   textOverflow: "ellipsis",
 });
 
-export function Search() {
-  return (
-    <FormControl sx={{ width: { xs: "100%", md: "25ch" } }} variant="outlined">
-      <OutlinedInput
-        size="small"
-        id="search"
-        placeholder="Search…"
-        sx={{ flexGrow: 1 }}
-        startAdornment={
-          <InputAdornment position="start" sx={{ color: "text.primary" }}>
-            <SearchRoundedIcon fontSize="small" />
-          </InputAdornment>
-        }
-        inputProps={{
-          "aria-label": "search",
-        }}
-      />
-    </FormControl>
-  );
-}
-
-
 export default function MainContent() {
   const [focusedCardIndex, setFocusedCardIndex] = useState(null);
   const token = localStorage.getItem("token");
@@ -86,8 +63,14 @@ export default function MainContent() {
   const [name, setName] = useState("");
   const [userNames, setUserNames] = useState({});
   const [topic, setTopic] = useState([]);
+  const [search, setSearch] = useState("");
+  const [filtercategory, setFilterCategory] = useState("all");
+  const [avaliable, setAvaliable] = useState(false);
 
-  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+  const capitalize = (str) => {
+    if (!str) return str; // Handle empty string or null
+    return str[0].toUpperCase() + str.slice(1);
+  };
 
   const handleFocus = (index) => {
     setFocusedCardIndex(index);
@@ -97,8 +80,14 @@ export default function MainContent() {
     setFocusedCardIndex(null);
   };
 
-  const handleClick = () => {};
-  
+  const handleCategory = (category) => {
+    setFilterCategory(category);
+  };
+
+  const handleSearch = (event) => {
+    const value = event?.target?.value || ""; // Safely access event.target.value
+    setSearch(value);
+  };
 
   const checkVaildUser = (topicOwnerId) => {
     if (topicOwnerId == id) {
@@ -119,7 +108,7 @@ export default function MainContent() {
       .then((response) => response.json())
       .then((result) => {
         if (result.status === "ok") {
-          // Redirect to homepage or handle UI update
+          alert("Topic is already delete");
           window.location = "/";
         }
       })
@@ -135,10 +124,11 @@ export default function MainContent() {
       .catch((error) => console.error("Error fetching user data", error));
   };
 
-
   const fetchUserdataById = async (id) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API}/getuser?id=${id}`);
+      const response = await fetch(
+        `${process.env.REACT_APP_API}/getuser?id=${id}`
+      );
       const user = await response.json();
       return user.data.fname; // Only return the name
     } catch (error) {
@@ -146,36 +136,34 @@ export default function MainContent() {
     }
   };
 
-
   const fetchTopicdata = () => {
     fetch(`${process.env.REACT_APP_API}/gettopic`)
       .then((response) => response.json())
       .then((result) => {
         setTopic(result.data);
+        setAvaliable(true);
       })
       .catch((error) => console.error("Error fetching topic data:", error));
   };
 
   useEffect(() => {
     fetchTopicdata();
-    console.log(fetchUserdataById(7))
     if (token) {
       fetchUserdata();
     }
   }, [token]);
 
-
   useEffect(() => {
     const fetchUsernames = async () => {
       const names = await Promise.all(
-        topic.map(item => fetchUserdataById(item.user_id))
+        topic.map((item) => fetchUserdataById(item.user_id))
       );
-      setUserNames(prevState => ({
+      setUserNames((prevState) => ({
         ...prevState,
         ...names.reduce((acc, name, idx) => {
           acc[topic[idx].user_id] = name;
           return acc;
-        }, {})
+        }, {}),
       }));
     };
 
@@ -184,10 +172,9 @@ export default function MainContent() {
     }
   }, [topic]);
 
-
-
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      {!avaliable && <Loading></Loading>}
       <div>
         {!token && (
           <Typography variant="h1" gutterBottom>
@@ -212,7 +199,27 @@ export default function MainContent() {
           overflow: "auto",
         }}
       >
-        <Search />
+        <FormControl
+          sx={{ width: { xs: "100%", md: "25ch" } }}
+          variant="outlined"
+        >
+          <OutlinedInput
+            size="small"
+            id="search"
+            placeholder="Search…"
+            sx={{ flexGrow: 1 }}
+            startAdornment={
+              <InputAdornment position="start" sx={{ color: "text.primary" }}>
+                <SearchRoundedIcon fontSize="small" />
+              </InputAdornment>
+            }
+            inputProps={{
+              "aria-label": "search",
+            }}
+            value={search} // Controlled input
+            onChange={handleSearch} // onChange handler
+          />
+        </FormControl>
         <IconButton size="small" aria-label="RSS feed">
           <RssFeedRoundedIcon />
         </IconButton>
@@ -236,36 +243,56 @@ export default function MainContent() {
             overflow: "auto",
           }}
         >
-          <Chip onClick={handleClick} size="medium" label="All categories" />
           <Chip
-            onClick={handleClick}
+            onClick={() => handleCategory("all")}
             size="medium"
-            label="Sport"
+            label="All categories"
             sx={{
-              backgroundColor: "transparent",
+              backgroundColor: filtercategory == "all" ? "" : "transparent",
               border: "none",
             }}
           />
           <Chip
-            onClick={handleClick}
+            onClick={() => handleCategory("technology")}
+            size="medium"
+            label="Technology"
+            sx={{
+              backgroundColor: filtercategory == "technology" ? "" : "transparent",
+              border: "none",
+            }}
+          />
+          <Chip
+            onClick={() => handleCategory("entertainment")}
             size="medium"
             label="Entertainment"
             sx={{
-              backgroundColor: "transparent",
+              backgroundColor:
+                filtercategory == "entertainment" ? "" : "transparent",
               border: "none",
             }}
           />
           <Chip
-            onClick={handleClick}
+            onClick={() => handleCategory("health")}
             size="medium"
-            label="Engineering"
+            label="Health"
             sx={{
-              backgroundColor: "transparent",
+              backgroundColor:
+                filtercategory == "health" ? "" : "transparent",
+              border: "none",
+            }}
+          />
+           <Chip
+            onClick={() => handleCategory("education")}
+            size="medium"
+            label="Education"
+            sx={{
+              backgroundColor:
+                filtercategory == "education" ? "" : "transparent",
               border: "none",
             }}
           />
           <Chip
-            onClick={handleClick}
+            onClick={() => handleCategory("other")}
             size="medium"
             label="Other"
             sx={{
@@ -283,108 +310,173 @@ export default function MainContent() {
             overflow: "auto",
           }}
         >
-          <Search />
-          <IconButton size="small" aria-label="RSS feed">
-            <RssFeedRoundedIcon />
-          </IconButton>
+          <FormControl
+            sx={{ width: { xs: "100%", md: "25ch" } }}
+            variant="outlined"
+          >
+            <OutlinedInput
+              size="small"
+              id="search"
+              placeholder="Search…"
+              sx={{ flexGrow: 1 }}
+              startAdornment={
+                <InputAdornment position="start" sx={{ color: "text.primary" }}>
+                  <SearchRoundedIcon fontSize="small" />
+                </InputAdornment>
+              }
+              inputProps={{
+                "aria-label": "search",
+              }}
+              value={search} // Controlled input
+              onChange={handleSearch} // onChange handler
+            />
+          </FormControl>
         </Box>
       </Box>
 
       <Grid container spacing={2} columns={12}>
-        {topic.map((item, index) => (
-          <Grid size={{ xs: 12, md: 6 }} key={index}>
-            <SyledCard
-              variant="outlined"
-              onFocus={() => handleFocus(index)}
-              onBlur={handleBlur}
-              tabIndex={0}
-              className={focusedCardIndex === 0 ? "Mui-focused" : ""}
-            >
-              <CardMedia
-                component="img"
-                alt="green iguana"
-                image={`https://picsum.photos/800/450?random=${index}`}
-                sx={{
-                  aspectRatio: "16 / 9",
-                  borderBottom: "1px solid",
-                  borderColor: "divider",
-                }}
-              />
-              <SyledCardContent>
-                <Typography gutterBottom variant="caption" component="div">
-                  {capitalize(item.category)}
-                </Typography>
-                <Typography gutterBottom variant="h6" component="div">
-                  {item.topic_name}
-                </Typography>
-                <StyledTypography
-                  variant="body2"
-                  color="text.secondary"
-                  gutterBottom
+        {topic
+          .filter((item) => {
+            if (search === "") return true;
+            return item.topic_name.toLowerCase().includes(search.toLowerCase());
+          })
+          .filter((item) => {
+            if (filtercategory === "all") return true;
+            return item.category === filtercategory;
+          }).length === 0 ? (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              top: 0,
+              left: 0,
+              width: "100%",
+            }}
+          >
+            <span style={{ marginTop: "24px", color: "gray", fontSize:"24px"}}>
+              No topic found
+            </span>
+          </Box>
+        ) : (
+          topic
+            .filter((item) => {
+              if (search == "") {
+                return item;
+              } else if (
+                item.topic_name.toLowerCase().includes(search.toLowerCase())
+              ) {
+                return item;
+              }
+            })
+            .filter((item) => {
+              if (filtercategory == "all") {
+                return item;
+              } else if (item.category == filtercategory) {
+                return item;
+              }
+            })
+            .map((item, index) => (
+              <Grid size={{ xs: 12, md: 6 }} key={index}>
+                <SyledCard
+                  variant="outlined"
+                  onFocus={() => handleFocus(index)}
+                  onBlur={handleBlur}
+                  tabIndex={0}
+                  className={focusedCardIndex === 0 ? "Mui-focused" : ""}
                 >
-                  {item.description}
-                </StyledTypography>
-              </SyledCardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: 2,
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "16px",
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    gap: 1,
-                    alignItems: "center",
-                  }}
-                >
-                  <Typography variant="caption">{capitalize(userNames[item.user_id])}</Typography>
-                </Box>
-                <Typography variant="caption">
-                  {new Date(item.created_time).toLocaleString()}
-                </Typography>
-              </Box>
-
-              { checkVaildUser(item.user_id) && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: 'flex-end',
-                    gap: 1,
-                    alignItems: "center",
-                    padding: "16px",
-                    paddingTop: 1,
-                  }}
-                >
-                  <Button
-                    color="success"
-                    variant="contained"
-                    size="small"
-                    component={Link}
-                    to={`/edit/${item.topic_id}`}
+                  <CardMedia
+                    component="img"
+                    alt="green iguana"
+                    image={`https://picsum.photos/800/450?random=${index}`}
+                    sx={{
+                      aspectRatio: "16 / 9",
+                      borderBottom: "1px solid",
+                      borderColor: "divider",
+                    }}
+                  />
+                  <SyledCardContent>
+                    <Typography gutterBottom variant="caption" component="div">
+                      {capitalize(item.category)}
+                    </Typography>
+                    <Typography gutterBottom variant="h6" component="div">
+                      {item.topic_name}
+                    </Typography>
+                    <StyledTypography
+                      variant="body2"
+                      color="text.secondary"
+                      gutterBottom
+                      sx={{
+                        whiteSpace: 'pre-line', // Ensures new lines are respected
+                        wordBreak: 'break-word', // Breaks long words if needed
+                        overflowWrap: 'break-word', // Ensures proper wrapping for long text
+                      }}
+                    >
+                      {item.description}
+                    </StyledTypography>
+                  </SyledCardContent>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      gap: 2,
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "16px",
+                    }}
                   >
-                    Edit
-                  </Button>
-                  <Button
-                    color="error"
-                    variant="contained"
-                    size="small"
-                    onClick={() => handleDelete(item.topic_id)}
-                  >
-                    DELETE
-                  </Button>
-                </Box>
-              )}
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: 1,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Typography variant="caption">
+                        {capitalize(userNames[item.user_id])}
+                      </Typography>
+                    </Box>
+                    <Typography variant="caption">
+                      {new Date(item.created_time).toLocaleString()}
+                    </Typography>
+                  </Box>
 
-              
-            </SyledCard>
-          </Grid>
-        ))}
+                  {checkVaildUser(item.user_id) && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: 1,
+                        alignItems: "center",
+                        padding: "16px",
+                        paddingTop: 1,
+                      }}
+                    >
+                      <Button
+                        color="success"
+                        variant="contained"
+                        size="small"
+                        component={Link}
+                        to={`/edit/${item.topic_id}`}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        color="error"
+                        variant="contained"
+                        size="small"
+                        onClick={() => handleDelete(item.topic_id)}
+                      >
+                        DELETE
+                      </Button>
+                    </Box>
+                  )}
+                </SyledCard>
+              </Grid>
+            ))
+        )}
       </Grid>
     </Box>
   );

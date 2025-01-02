@@ -12,8 +12,9 @@ import Typography from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
-import { SitemarkIcon } from "./component/CustomIcons";
-import { useNavigate, useParams } from "react-router-dom";
+import WebboardIcon from "../component/CustomIcons";
+import { useNavigate } from "react-router-dom";
+import AppTheme from '../theme/AppTheme';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -58,22 +59,13 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 }));
 
 
-export default function Edit() {
-  const { id } = useParams(); //topic id
+export default function CreateTopicPage(props) {
   const navigate = useNavigate();
-
-
-  const [topic, setTopic] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState(""); // Initialize with empty string
-  
   const redirectPage = () => {
     navigate("/");
   };
 
-
-
-  const fetchAuthen = () => {
+  useEffect(() => {
     const token = localStorage.getItem("token");
     fetch(`${process.env.REACT_APP_API}/authen`, {
       method: "POST",
@@ -93,48 +85,27 @@ export default function Edit() {
       .catch((error) => {
         console.error("Error:", error);
       });
-  }
+  }, []);
 
-  const fetchTopicId = () => {
-    fetch(`http://localhost:8080/getonetopic/?id=${id}`, {
-      method: 'GET',
-      headers: {
-          'Content-Type': 'application/json', // Tell the server we're sending JSON
-      }
-  })
-      .then((response) => response.json())
-      .then((result) => {
-        setTopic(result.data[0].topic_name)
-        setDescription(result.data[0].description)
-        setCategory(result.data[0].category)
-      })
-      .catch((error) => {
-          console.error('Error:', error);
-      });
+  
+  const [category, setCategory] = useState("");
 
-  }
-
-
-  useEffect(() => {
-    fetchAuthen() 
-    fetchTopicId()
-    // eslint-disable-next-line
-  },[]);
-
-
+  const handleChange = (event) => {
+    setCategory(event.target.value);
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-        const user_id = localStorage.getItem("id")
+      const user_id = localStorage.getItem("id")
+        const data = new FormData(event.currentTarget);
         const jsonData = {
-          topic_id: id,
-          topic_name: topic,
-          description: description,
-          category: category,
+          topic_name: data.get('topic'),
+          description: data.get('description'),
+          category: data.get('category'),
           user_id: user_id
         };
 
-        fetch(`http://localhost:8080/updatetopic`, {
+        fetch('http://localhost:8080/createtopic', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json', // Tell the server we're sending JSON
@@ -143,7 +114,7 @@ export default function Edit() {
       })
           .then((response) => response.json())
           .then((data) => {
-            alert("Topic data is already updated")
+            alert("New topic is already created")
             redirectPage()
           })
           .catch((error) => {
@@ -156,7 +127,7 @@ export default function Edit() {
       <CssBaseline enableColorScheme />
       <SignUpContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
-          <SitemarkIcon />
+          <WebboardIcon />
           <Typography
             component="h1"
             variant="h4"
@@ -177,8 +148,7 @@ export default function Edit() {
                 required
                 fullWidth
                 id="topic"
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
+                placeholder="Insert Topic..."
               />
             </FormControl>
             <FormControl>
@@ -188,10 +158,9 @@ export default function Edit() {
                 name="description"
                 required
                 id="description"
-                value={description}
+                placeholder="Insert Description..."
                 multiline
                 rows={4}
-                onChange={(e) => setDescription(e.target.value)}
               />
             </FormControl>
             <FormControl fullWidth>
@@ -202,10 +171,12 @@ export default function Edit() {
                 name="category"
                 value={category}
                 label="Category"
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={handleChange}
               >
-                <MenuItem value={"sport"}>Sport</MenuItem>
+                <MenuItem value={"technology"}>Technology</MenuItem>
                 <MenuItem value={"entertainment"}>Entertainment</MenuItem>
+                <MenuItem value={"health"}>Health</MenuItem>
+                <MenuItem value={"education"}>Education</MenuItem>
                 <MenuItem value={"other"}>Other</MenuItem>
               </Select>
             </FormControl>
