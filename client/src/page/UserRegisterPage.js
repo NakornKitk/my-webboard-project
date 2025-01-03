@@ -1,4 +1,4 @@
-import * as React from 'react';
+import {useState} from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,6 +13,9 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import WebboardIcon from '../component/CustomIcons';
 import AppTheme from '../theme/AppTheme';
+import Alert from "@mui/material/Alert";
+import CheckIcon from '@mui/icons-material/Check';
+import ErrorIcon from '@mui/icons-material/Error';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -58,6 +61,7 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
 
 export default function UserRegisterPage(props) {
   const token = localStorage.getItem("token");
+  const [alert, setAlert] = useState("");
  
 
   const handleSubmit = (event) => {
@@ -80,17 +84,17 @@ export default function UserRegisterPage(props) {
       .then((response) => response.json())
       .then((data) => {
           if (data.status === 'ok') {
-              alert('register successful');
               if (token) {
                 localStorage.removeItem('token')
                 localStorage.removeItem('user')
               }
-              window.location = '/login'
-          } else {
-              alert('register failed');
-          }
+          setAlert("success");
+          setTimeout(() => {
+            window.location = "/login";
+          }, 2000);}
       })
       .catch((error) => {
+          setAlert("error");
           console.error('Error:', error);
       });
   };
@@ -98,6 +102,42 @@ export default function UserRegisterPage(props) {
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
+      { alert === "success" && (
+        <Alert
+          icon={<CheckIcon fontSize="inherit" />}
+          severity="success"
+          variant="outlined"
+          sx={{
+            position: "fixed", // Ensures it doesn't affect layout
+            top: "16px", // Adjusts position from the top
+            left: "50%", // Centers horizontally
+            transform: "translateX(-50%)", // Centers the alert
+            zIndex: 9999, // Ensures it stays above other elements
+            boxShadow: 0,
+            backgroundImage: "none",
+          }}
+        >
+          Register successfully.
+        </Alert>
+      )}
+      { alert === "error" && (
+        <Alert
+          icon={<ErrorIcon fontSize="inherit" />}
+          severity="error"
+          variant="outlined"
+          sx={{
+            position: "fixed", // Ensures it doesn't affect layout
+            top: "16px", // Adjusts position from the top
+            left: "50%", // Centers horizontally
+            transform: "translateX(-50%)", // Centers the alert
+            zIndex: 9999, // Ensures it stays above other elements
+            boxShadow: 0,
+            backgroundImage: "none",
+          }}
+        >
+          Fail to Register
+        </Alert>
+      )}
       <SignUpContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
           <WebboardIcon />

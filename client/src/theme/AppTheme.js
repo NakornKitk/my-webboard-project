@@ -1,44 +1,62 @@
-import * as React from 'react';
+import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-
-import { inputsCustomizations } from './customizations/inputs';
-import { dataDisplayCustomizations } from './customizations/dataDisplay';
-import { feedbackCustomizations } from './customizations/feedback';
-import { navigationCustomizations } from './customizations/navigation';
-import { surfacesCustomizations } from './customizations/surfaces';
-import { colorSchemes, typography, shadows, shape } from './themePrimitives';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
 
 function AppTheme(props) {
   const { children, disableCustomTheme, themeComponents } = props;
-  const theme = React.useMemo(() => {
+  const [mode, setMode] = useState('light'); // State for light/dark mode
+
+  const theme = useMemo(() => {
     return disableCustomTheme
       ? {}
       : createTheme({
-          // For more details about CSS variables configuration, see https://mui.com/material-ui/customization/css-theme-variables/configuration/
           cssVariables: {
             colorSchemeSelector: 'data-mui-color-scheme',
             cssVarPrefix: 'template',
           },
-          colorSchemes, // Recently added in v6 for building light & dark mode app, see https://mui.com/material-ui/customization/palette/#color-schemes
-          typography,
-          shadows,
-          shape,
+          palette: {
+            mode, // Light or dark mode
+          },
           components: {
-            ...inputsCustomizations,
-            ...dataDisplayCustomizations,
-            ...feedbackCustomizations,
-            ...navigationCustomizations,
-            ...surfacesCustomizations,
             ...themeComponents,
           },
         });
-  }, [disableCustomTheme, themeComponents]);
+  }, [disableCustomTheme, themeComponents, mode]);
+
+  const handleToggleTheme = (event, newMode) => {
+    if (newMode) {
+      setMode(newMode);
+    }
+  };
+
   if (disableCustomTheme) {
     return <React.Fragment>{children}</React.Fragment>;
   }
+
   return (
-    <ThemeProvider theme={theme} disableTransitionOnChange>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <ToggleButtonGroup
+        value={mode}
+        exclusive
+        onChange={handleToggleTheme}
+        sx={{
+          position: 'fixed',
+          top: '16px',
+          right: '16px',
+          zIndex: 1300,
+        }}
+      >
+        <ToggleButton value="light" aria-label="light mode">
+          <LightModeIcon />
+        </ToggleButton>
+        <ToggleButton value="dark" aria-label="dark mode">
+          <DarkModeIcon />
+        </ToggleButton>
+      </ToggleButtonGroup>
       {children}
     </ThemeProvider>
   );
@@ -46,9 +64,6 @@ function AppTheme(props) {
 
 AppTheme.propTypes = {
   children: PropTypes.node,
-  /**
-   * This is for the docs site. You can ignore it or remove it.
-   */
   disableCustomTheme: PropTypes.bool,
   themeComponents: PropTypes.object,
 };

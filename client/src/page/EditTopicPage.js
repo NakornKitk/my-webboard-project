@@ -14,6 +14,9 @@ import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
 import WebboardIcon from "../component/CustomIcons";
 import { useNavigate, useParams } from "react-router-dom";
+import Alert from "@mui/material/Alert";
+import CheckIcon from '@mui/icons-material/Check';
+import ErrorIcon from '@mui/icons-material/Error';
 import AppTheme from '../theme/AppTheme';
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -63,16 +66,14 @@ export default function EditTopicPage(props) {
   const { id } = useParams(); //topic id
   const navigate = useNavigate();
 
-
   const [topic, setTopic] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState(""); // Initialize with empty string
+  const [alert, setAlert] = useState("");
   
   const redirectPage = () => {
     navigate("/");
   };
-
-
 
   const fetchAuthen = () => {
     const token = localStorage.getItem("token");
@@ -144,17 +145,56 @@ export default function EditTopicPage(props) {
       })
           .then((response) => response.json())
           .then((data) => {
-            alert("Topic data is already updated")
-            redirectPage()
+            setAlert("success");
+            setTimeout(() => {
+              redirectPage()
+            }, 2000);
           })
           .catch((error) => {
-              console.error('Error:', error);
+            setAlert("error");
+            console.error('Error:', error);
           });
   };
 
   return (
-    <>
+    <AppTheme {...props}>
       <CssBaseline enableColorScheme />
+      {(alert === "success") && (
+        <Alert
+          icon={<CheckIcon fontSize="inherit" />}
+          severity="success"
+          variant="outlined"
+          sx={{
+            position: "fixed", // Ensures it doesn't affect layout
+            top: "16px", // Adjusts position from the top
+            left: "50%", // Centers horizontally
+            transform: "translateX(-50%)", // Centers the alert
+            zIndex: 9999, // Ensures it stays above other elements
+            boxShadow: 0,
+            backgroundImage: "none",
+          }}
+        >
+          Edit Topic successfully
+        </Alert>
+      )}
+      {(alert === "error") && (
+        <Alert
+          icon={<ErrorIcon fontSize="inherit" />}
+          severity="error"
+          variant="outlined"
+          sx={{
+            position: "fixed", // Ensures it doesn't affect layout
+            top: "16px", // Adjusts position from the top
+            left: "50%", // Centers horizontally
+            transform: "translateX(-50%)", // Centers the alert
+            zIndex: 9999, // Ensures it stays above other elements
+            boxShadow: 0,
+            backgroundImage: "none",
+          }}
+        >
+          Fail to Edit Topic
+        </Alert>
+      )}
       <SignUpContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
           <WebboardIcon />
@@ -226,6 +266,6 @@ export default function EditTopicPage(props) {
           </Box>
         </Card>
       </SignUpContainer>
-    </>
+    </AppTheme>
   );
 }

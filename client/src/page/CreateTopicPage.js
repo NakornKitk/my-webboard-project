@@ -14,6 +14,9 @@ import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
 import WebboardIcon from "../component/CustomIcons";
 import { useNavigate } from "react-router-dom";
+import Alert from "@mui/material/Alert";
+import CheckIcon from "@mui/icons-material/Check";
+import ErrorIcon from '@mui/icons-material/Error';
 import AppTheme from '../theme/AppTheme';
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -58,7 +61,6 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-
 export default function CreateTopicPage(props) {
   const navigate = useNavigate();
   const redirectPage = () => {
@@ -87,8 +89,8 @@ export default function CreateTopicPage(props) {
       });
   }, []);
 
-  
   const [category, setCategory] = useState("");
+  const [alert, setAlert] = useState("");
 
   const handleChange = (event) => {
     setCategory(event.target.value);
@@ -96,35 +98,76 @@ export default function CreateTopicPage(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-      const user_id = localStorage.getItem("id")
-        const data = new FormData(event.currentTarget);
-        const jsonData = {
-          topic_name: data.get('topic'),
-          description: data.get('description'),
-          category: data.get('category'),
-          user_id: user_id
-        };
+    const user_id = localStorage.getItem("id");
+    const data = new FormData(event.currentTarget);
+    const jsonData = {
+      topic_name: data.get("topic"),
+      description: data.get("description"),
+      category: data.get("category"),
+      user_id: user_id,
+    };
 
-        fetch('http://localhost:8080/createtopic', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json', // Tell the server we're sending JSON
-          },
-          body: JSON.stringify(jsonData), // Convert JavaScript object to JSON string
+    fetch("http://localhost:8080/createtopic", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // Tell the server we're sending JSON
+      },
+      body: JSON.stringify(jsonData), // Convert JavaScript object to JSON string
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "ok") {
+          setAlert("success");
+          setTimeout(() => {
+            redirectPage();
+          }, 2000);
+        }
       })
-          .then((response) => response.json())
-          .then((data) => {
-            alert("New topic is already created")
-            redirectPage()
-          })
-          .catch((error) => {
-              console.error('Error:', error);
-          });
+      .catch((error) => {
+        setAlert("error");
+        console.error("Error:", error);
+      });
   };
 
   return (
-    <>
+    <AppTheme {...props}>
       <CssBaseline enableColorScheme />
+      {alert === "success" && (
+        <Alert
+        icon={<CheckIcon fontSize="inherit" />}
+        severity="success"
+        variant="outlined"
+        sx={{
+          position: "fixed", // Ensures it doesn't affect layout
+          top: "16px",       // Adjusts position from the top
+          left: "50%",       // Centers horizontally
+          transform: "translateX(-50%)", // Centers the alert
+          zIndex: 9999,      // Ensures it stays above other elements
+          boxShadow: 0,
+          backgroundImage: "none",
+        }}
+      >
+        Topic is successfully created.
+      </Alert>
+      )}
+      { alert === "error" && (
+        <Alert
+          icon={<ErrorIcon fontSize="inherit" />}
+          severity="error"
+          variant="outlined"
+          sx={{
+            position: "fixed", // Ensures it doesn't affect layout
+            top: "16px", // Adjusts position from the top
+            left: "50%", // Centers horizontally
+            transform: "translateX(-50%)", // Centers the alert
+            zIndex: 9999, // Ensures it stays above other elements
+            boxShadow: 0,
+            backgroundImage: "none",
+          }}
+        >
+          Fail to create a topic
+        </Alert>
+      )}
       <SignUpContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
           <WebboardIcon />
@@ -194,6 +237,6 @@ export default function CreateTopicPage(props) {
           </Box>
         </Card>
       </SignUpContainer>
-    </>
+    </AppTheme>
   );
 }

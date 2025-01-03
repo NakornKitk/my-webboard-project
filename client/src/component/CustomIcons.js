@@ -18,7 +18,7 @@ export default function WebboardIcon() {
             enableBackground: "new 0 0 122.88 101.37",
             width: "40px",
             height: "40px",
-            fill:"gray"
+            fill:"#0073E6"
           }}
           xmlSpace="preserve"
         >
@@ -47,7 +47,7 @@ export default function WebboardIcon() {
           marginLeft: "10px",
           fontSize: "16px",
           fontWeight: "bold",
-          color: "gray"
+          color: "#0073E6"
         }}
       >
         My Webboard

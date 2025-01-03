@@ -1,7 +1,4 @@
 import { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import Avatar from "@mui/material/Avatar";
-import AvatarGroup from "@mui/material/AvatarGroup";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -19,6 +16,9 @@ import RssFeedRoundedIcon from "@mui/icons-material/RssFeedRounded";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
 import Loading from "./Loading";
+import Alert from "@mui/material/Alert";
+import CheckIcon from '@mui/icons-material/Check';
+import ErrorIcon from '@mui/icons-material/Error';
 
 const SyledCard = styled(Card)(({ theme }) => ({
   display: "flex",
@@ -66,6 +66,7 @@ export default function MainContent() {
   const [search, setSearch] = useState("");
   const [filtercategory, setFilterCategory] = useState("all");
   const [avaliable, setAvaliable] = useState(false);
+  const [alert, setAlert] = useState("");
 
   const capitalize = (str) => {
     if (!str) return str; // Handle empty string or null
@@ -90,6 +91,7 @@ export default function MainContent() {
   };
 
   const checkVaildUser = (topicOwnerId) => {
+    // eslint-disable-next-line
     if (topicOwnerId == id) {
       return true;
     } else {
@@ -108,12 +110,22 @@ export default function MainContent() {
       .then((response) => response.json())
       .then((result) => {
         if (result.status === "ok") {
-          alert("Topic is already delete");
-          window.location = "/";
+          setAlert("success");
+          window.scrollTo({
+            top:0
+        })
+        fetchTopicdata();
+        setTimeout(() => {
+          setAlert("")
+        }, 2000);
         }
       })
-      .catch((error) => console.error("Error Delete topic", error));
+      .catch((error) => {
+        setAlert("error")
+        console.error("Error Delete topic", error);
+      })
   };
+
 
   const fetchUserdata = () => {
     fetch(`${process.env.REACT_APP_API}/getuser?id=${id}`)
@@ -151,6 +163,7 @@ export default function MainContent() {
     if (token) {
       fetchUserdata();
     }
+    // eslint-disable-next-line
   }, [token]);
 
   useEffect(() => {
@@ -175,6 +188,16 @@ export default function MainContent() {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
       {!avaliable && <Loading></Loading>}
+      {alert === "success" && (
+        <Alert icon={<CheckIcon fontSize="inherit" />} severity="success" variant="outlined" >
+        Topic is already delete
+        </Alert>
+      )}
+      {alert === "error" && (
+        <Alert icon={<ErrorIcon fontSize="inherit" />} severity="error" variant="outlined" >
+        Topic is fail to delete
+        </Alert>
+      )}
       <div>
         {!token && (
           <Typography variant="h1" gutterBottom>
@@ -248,7 +271,7 @@ export default function MainContent() {
             size="medium"
             label="All categories"
             sx={{
-              backgroundColor: filtercategory == "all" ? "" : "transparent",
+              backgroundColor: filtercategory === "all" ? "" : "transparent",
               border: "none",
             }}
           />
@@ -257,7 +280,8 @@ export default function MainContent() {
             size="medium"
             label="Technology"
             sx={{
-              backgroundColor: filtercategory == "technology" ? "" : "transparent",
+              backgroundColor:
+                filtercategory === "technology" ? "" : "transparent",
               border: "none",
             }}
           />
@@ -267,7 +291,7 @@ export default function MainContent() {
             label="Entertainment"
             sx={{
               backgroundColor:
-                filtercategory == "entertainment" ? "" : "transparent",
+                filtercategory === "entertainment" ? "" : "transparent",
               border: "none",
             }}
           />
@@ -276,18 +300,17 @@ export default function MainContent() {
             size="medium"
             label="Health"
             sx={{
-              backgroundColor:
-                filtercategory == "health" ? "" : "transparent",
+              backgroundColor: filtercategory === "health" ? "" : "transparent",
               border: "none",
             }}
           />
-           <Chip
+          <Chip
             onClick={() => handleCategory("education")}
             size="medium"
             label="Education"
             sx={{
               backgroundColor:
-                filtercategory == "education" ? "" : "transparent",
+                filtercategory === "education" ? "" : "transparent",
               border: "none",
             }}
           />
@@ -355,14 +378,17 @@ export default function MainContent() {
               width: "100%",
             }}
           >
-            <span style={{ marginTop: "24px", color: "gray", fontSize:"24px"}}>
+            <span
+              style={{ marginTop: "24px", color: "gray", fontSize: "24px" }}
+            >
               No topic found
             </span>
           </Box>
         ) : (
           topic
+            // eslint-disable-next-line
             .filter((item) => {
-              if (search == "") {
+              if (search === "") {
                 return item;
               } else if (
                 item.topic_name.toLowerCase().includes(search.toLowerCase())
@@ -370,10 +396,11 @@ export default function MainContent() {
                 return item;
               }
             })
+            // eslint-disable-next-line
             .filter((item) => {
-              if (filtercategory == "all") {
+              if (filtercategory === "all") {
                 return item;
-              } else if (item.category == filtercategory) {
+              } else if (item.category === filtercategory) {
                 return item;
               }
             })
@@ -408,9 +435,9 @@ export default function MainContent() {
                       color="text.secondary"
                       gutterBottom
                       sx={{
-                        whiteSpace: 'pre-line', // Ensures new lines are respected
-                        wordBreak: 'break-word', // Breaks long words if needed
-                        overflowWrap: 'break-word', // Ensures proper wrapping for long text
+                        whiteSpace: "pre-line", // Ensures new lines are respected
+                        wordBreak: "break-word", // Breaks long words if needed
+                        overflowWrap: "break-word", // Ensures proper wrapping for long text
                       }}
                     >
                       {item.description}
