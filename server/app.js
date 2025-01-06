@@ -11,13 +11,15 @@ require("dotenv").config();
 app.use(cors());
 
 const mysql = require("mysql2");
-const connection = mysql.createConnection({
-  host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASS || "",
-  database: process.env.DB_NAME || "my_webboard",
-  port: process.env.DB_PORT || 3307,
-});
+// const connection = mysql.createConnection({
+//   host: process.env.DB_HOST || "localhost",
+//   user: process.env.DB_USER || "root",
+//   password: process.env.DB_PASS || "",
+//   database: process.env.DB_NAME || "my_webboard",
+//   port: process.env.DB_PORT || 3307,
+// });
+
+const connection = mysql.createConnection(process.env.DB_URL);
 
 app.post("/register", jsonParser, function (req, res, next) {
   bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
