@@ -8,7 +8,7 @@ My webboard website features a logged-in session and supports CRUD functionality
 <br>
 
 Visit our website here.
-- [my-webboard-project](https://popcat-clicks-battle-project.onrender.com/)
+- [my-webboard-project](https://my-webboard-project.onrender.com)
 
 <br>
 

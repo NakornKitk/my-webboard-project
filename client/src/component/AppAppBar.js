@@ -39,10 +39,6 @@ export default function AppAppBar() {
 
   const token = localStorage.getItem("token");
 
-  const handleCreate = () => {
-    window.location = "/create";
-  };
-
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("id");
@@ -80,7 +76,8 @@ export default function AppAppBar() {
               color="primary"
               variant="text"
               size="small"
-              onClick={handleCreate}
+              component={Link}
+              to="/create"
             >
               Create a post
             </Button>
