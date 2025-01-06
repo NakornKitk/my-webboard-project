@@ -65,7 +65,9 @@ export default function AppAppBar() {
           <Box
             sx={{ flexGrow: 1, display: "flex", alignItems: "center", px: 0 }}
           >
-            <WebboardIcon />
+            <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+              <WebboardIcon />
+            </Link>
           </Box>
           <Box
             sx={{
@@ -74,14 +76,14 @@ export default function AppAppBar() {
               alignItems: "center",
             }}
           >
-             <Button
-                  color="primary"
-                  variant="text"
-                  size="small"
-                  onClick={handleCreate}
-                >
-                  Create a post
-              </Button>
+            <Button
+              color="primary"
+              variant="text"
+              size="small"
+              onClick={handleCreate}
+            >
+              Create a post
+            </Button>
             {!token && (
               <>
                 <Button
@@ -142,7 +144,7 @@ export default function AppAppBar() {
                     <CloseRoundedIcon />
                   </IconButton>
                 </Box>
-                
+
                 <Divider sx={{ my: 3 }} />
                 {!token && (
                   <>

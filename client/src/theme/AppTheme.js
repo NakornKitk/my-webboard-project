@@ -45,7 +45,7 @@ function AppTheme(props) {
         onChange={handleToggleTheme}
         sx={{
           position: 'fixed',
-          top: '16px',
+          bottom: '16px',
           right: '16px',
           zIndex: 1300,
         }}

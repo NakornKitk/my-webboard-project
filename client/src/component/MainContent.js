@@ -17,8 +17,8 @@ import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
 import Loading from "./Loading";
 import Alert from "@mui/material/Alert";
-import CheckIcon from '@mui/icons-material/Check';
-import ErrorIcon from '@mui/icons-material/Error';
+import CheckIcon from "@mui/icons-material/Check";
+import ErrorIcon from "@mui/icons-material/Error";
 
 const SyledCard = styled(Card)(({ theme }) => ({
   display: "flex",
@@ -112,20 +112,19 @@ export default function MainContent() {
         if (result.status === "ok") {
           setAlert("success");
           window.scrollTo({
-            top:0
-        })
-        fetchTopicdata();
-        setTimeout(() => {
-          setAlert("")
-        }, 2000);
+            top: 0,
+          });
+          fetchTopicdata();
+          setTimeout(() => {
+            setAlert("");
+          }, 2000);
         }
       })
       .catch((error) => {
-        setAlert("error")
+        setAlert("error");
         console.error("Error Delete topic", error);
-      })
+      });
   };
-
 
   const fetchUserdata = () => {
     fetch(`${process.env.REACT_APP_API}/getuser?id=${id}`)
@@ -189,13 +188,21 @@ export default function MainContent() {
     <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
       {!avaliable && <Loading></Loading>}
       {alert === "success" && (
-        <Alert icon={<CheckIcon fontSize="inherit" />} severity="success" variant="outlined" >
-        Topic is already delete
+        <Alert
+          icon={<CheckIcon fontSize="inherit" />}
+          severity="success"
+          variant="outlined"
+        >
+          Topic is already delete
         </Alert>
       )}
       {alert === "error" && (
-        <Alert icon={<ErrorIcon fontSize="inherit" />} severity="error" variant="outlined" >
-        Topic is fail to delete
+        <Alert
+          icon={<ErrorIcon fontSize="inherit" />}
+          severity="error"
+          variant="outlined"
+        >
+          Topic is fail to delete
         </Alert>
       )}
       <div>
@@ -413,62 +420,71 @@ export default function MainContent() {
                   tabIndex={0}
                   className={focusedCardIndex === 0 ? "Mui-focused" : ""}
                 >
-                  <CardMedia
-                    component="img"
-                    alt="green iguana"
-                    image={`https://picsum.photos/800/450?random=${index}`}
-                    sx={{
-                      aspectRatio: "16 / 9",
-                      borderBottom: "1px solid",
-                      borderColor: "divider",
-                    }}
-                  />
-                  <SyledCardContent>
-                    <Typography gutterBottom variant="caption" component="div">
-                      {capitalize(item.category)}
-                    </Typography>
-                    <Typography gutterBottom variant="h6" component="div">
-                      {item.topic_name}
-                    </Typography>
-                    <StyledTypography
-                      variant="body2"
-                      color="text.secondary"
-                      gutterBottom
-                      sx={{
-                        whiteSpace: "pre-line", // Ensures new lines are respected
-                        wordBreak: "break-word", // Breaks long words if needed
-                        overflowWrap: "break-word", // Ensures proper wrapping for long text
-                      }}
-                    >
-                      {item.description}
-                    </StyledTypography>
-                  </SyledCardContent>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      gap: 2,
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "16px",
-                    }}
+                  <Link
+                    to={`/${item.topic_id}`}
+                    style={{ textDecoration: "none", color: "inherit" }}
                   >
+                    <CardMedia
+                      component="img"
+                      alt="random picture"
+                      image={`https://picsum.photos/800/450?random=${index}`}
+                      sx={{
+                        aspectRatio: "16 / 9",
+                        borderBottom: "1px solid",
+                        borderColor: "divider",
+                      }}
+                    />
+                    <SyledCardContent>
+                      <Typography
+                        gutterBottom
+                        variant="caption"
+                        component="div"
+                      >
+                        {capitalize(item.category)}
+                      </Typography>
+                      <Typography gutterBottom variant="h6" component="div">
+                        {item.topic_name}
+                      </Typography>
+                      <StyledTypography
+                        variant="body2"
+                        color="text.secondary"
+                        gutterBottom
+                        sx={{
+                          whiteSpace: "pre-line", // Ensures new lines are respected
+                          wordBreak: "break-word", // Breaks long words if needed
+                          overflowWrap: "break-word", // Ensures proper wrapping for long text
+                        }}
+                      >
+                        {item.description}
+                      </StyledTypography>
+                    </SyledCardContent>
                     <Box
                       sx={{
                         display: "flex",
                         flexDirection: "row",
-                        gap: 1,
+                        gap: 2,
                         alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "16px",
                       }}
                     >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          gap: 1,
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography variant="caption">
+                          {capitalize(userNames[item.user_id])}
+                        </Typography>
+                      </Box>
                       <Typography variant="caption">
-                        {capitalize(userNames[item.user_id])}
+                        {new Date(item.created_time).toLocaleString()}
                       </Typography>
                     </Box>
-                    <Typography variant="caption">
-                      {new Date(item.created_time).toLocaleString()}
-                    </Typography>
-                  </Box>
+                  </Link>
 
                   {checkVaildUser(item.user_id) && (
                     <Box
