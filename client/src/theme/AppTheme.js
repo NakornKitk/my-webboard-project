@@ -52,7 +52,7 @@ function AppTheme(props) {
           bottom: '16px',
           right: '16px',
           zIndex: 1300,
-          backgroundColor: '#5fe4ff',
+          backgroundColor: '#0073E6',
         }}
       >
         <ToggleButton value="light" aria-label="light mode">
