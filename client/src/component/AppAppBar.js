@@ -176,7 +176,8 @@ export default function AppAppBar() {
                         color="primary"
                         variant="outlined"
                         fullWidth
-                        onClick={handleCreate}
+                        component={Link}
+                        to="/create"
                       >
                         Create a post
                       </Button>
