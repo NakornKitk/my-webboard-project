@@ -217,7 +217,7 @@ export default function MainContent() {
           </Typography>
         )}
         <Typography>
-          Stay in the loop with the latest about your topic
+          Stay updated with the latest news and insights related to your topic of interest.
         </Typography>
       </div>
       <Box
