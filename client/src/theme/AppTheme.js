@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
@@ -7,7 +7,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 
 function AppTheme(props) {
   const { children, disableCustomTheme, themeComponents } = props;
-  const [mode, setMode] = useState('light'); // State for light/dark mode
+  const [mode, setMode] = useState(() => localStorage.getItem('themeMode') || 'light'); // State for light/dark mode
 
   const theme = useMemo(() => {
     return disableCustomTheme
@@ -25,6 +25,10 @@ function AppTheme(props) {
           },
         });
   }, [disableCustomTheme, themeComponents, mode]);
+
+  useEffect(() => {
+    localStorage.setItem('themeMode', mode);
+  }, [mode]);
 
   const handleToggleTheme = (event, newMode) => {
     if (newMode) {
@@ -48,6 +52,7 @@ function AppTheme(props) {
           bottom: '16px',
           right: '16px',
           zIndex: 1300,
+          backgroundColor: '#5fe4ff',
         }}
       >
         <ToggleButton value="light" aria-label="light mode">
