@@ -36,7 +36,7 @@ export default function EditTopicPage(props) {
   };
 
   const fetchTopicId = () => {
-    fetch(`http://localhost:8080/getonetopic/?id=${id}`, {
+    fetch(`${process.env.REACT_APP_API}/getonetopic/?id=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

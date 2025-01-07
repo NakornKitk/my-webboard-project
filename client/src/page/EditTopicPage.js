@@ -98,7 +98,7 @@ export default function EditTopicPage(props) {
   }
 
   const fetchTopicId = () => {
-    fetch(`http://localhost:8080/getonetopic/?id=${id}`, {
+    fetch(`${process.env.REACT_APP_API}/getonetopic/?id=${id}`, {
       method: 'GET',
       headers: {
           'Content-Type': 'application/json', // Tell the server we're sending JSON
@@ -136,7 +136,7 @@ export default function EditTopicPage(props) {
           user_id: user_id
         };
 
-        fetch(`http://localhost:8080/updatetopic`, {
+        fetch(`${process.env.REACT_APP_API}/updatetopic`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json', // Tell the server we're sending JSON

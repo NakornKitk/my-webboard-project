@@ -107,7 +107,7 @@ export default function CreateTopicPage(props) {
       user_id: user_id,
     };
 
-    fetch("http://localhost:8080/createtopic", {
+    fetch(`${process.env.REACT_APP_API}/createtopic`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json", // Tell the server we're sending JSON
