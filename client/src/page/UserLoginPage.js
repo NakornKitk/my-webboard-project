@@ -89,8 +89,9 @@ export default function UserLoginPage(props) {
           setTimeout(() => {
             window.location = "/";
           }, 2000);
+        } else {
+          setAlert("error");
         }
-        console.log("ok:", data);
       })
       .catch((error) => {
         setAlert("error");
