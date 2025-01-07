@@ -90,6 +90,7 @@ export default function UserLoginPage(props) {
             window.location = "/";
           }, 2000);
         }
+        console.log("ok:", data);
       })
       .catch((error) => {
         setAlert("error");
