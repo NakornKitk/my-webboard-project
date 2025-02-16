@@ -100,7 +100,7 @@ app.get("/getuser", jsonParser, function (req, res, next) {
         res.json({ status: "error", message: "user not found" });
         return;
       }
-      res.json({ status: "ok", data: user[0]});
+      res.json({ status: "ok", data: user[0] });
     }
   );
 });
@@ -111,21 +111,21 @@ app.get("/gettopic", jsonParser, function (req, res, next) {
       res.json({ status: "error", message: err });
       return;
     }
-    res.json({ status: "ok", data: topic});
+    res.json({ status: "ok", data: topic });
   });
 });
 
 app.get("/getonetopic", jsonParser, function (req, res, next) {
   const id = req.query.id
   connection.execute("SELECT * FROM topics where topic_id = ?",
-  [id],
-  function (err, topic, fields) {
-    if (err) {
-      res.json({ status: "error", message: err });
-      return;
-    }
-    res.json({ status: "ok", data: topic});
-  });
+    [id],
+    function (err, topic, fields) {
+      if (err) {
+        res.json({ status: "error", message: err });
+        return;
+      }
+      res.json({ status: "ok", data: topic });
+    });
 });
 
 app.post("/createtopic", jsonParser, function (req, res, next) {
@@ -149,22 +149,22 @@ app.post("/createtopic", jsonParser, function (req, res, next) {
 
 
 app.post("/updatetopic", jsonParser, function (req, res, next) {
-    const id = req.body.topic_id;
-    const name = req.body.topic_name;
-    const description = req.body.description;
-    const category = req.body.category;
-  
-    connection.execute(
-      "UPDATE topics SET topic_name = ?, description = ?, category = ? WHERE topic_id = ?",
-      [name, description, category, id],
-      function (err, results, fields) {
-        if (err) {
-          res.json({ status: "error", message: err });
-          return;
-        }
-        res.json({ status: "ok", message: "topic is already updated" });
+  const id = req.body.topic_id;
+  const name = req.body.topic_name;
+  const description = req.body.description;
+  const category = req.body.category;
+
+  connection.execute(
+    "UPDATE topics SET topic_name = ?, description = ?, category = ? WHERE topic_id = ?",
+    [name, description, category, id],
+    function (err, results, fields) {
+      if (err) {
+        res.json({ status: "error", message: err });
+        return;
       }
-    );
+      res.json({ status: "ok", message: "topic is already updated" });
+    }
+  );
 });
 
 app.post("/deletetopic", jsonParser, function (req, res, next) {
